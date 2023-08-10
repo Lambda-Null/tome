@@ -33,7 +33,7 @@ There are certainly lots of options for parsing Markdown, but they're separate p
 ```python
 with open(code_file, "w") as f:
     writing = False
-    for line in open(doc_file).readlines():
+    for line in open(doc_file, "r").readlines():
         if re.match(r"^```", line):
             writing = not writing
         elif writing:
