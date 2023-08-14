@@ -9,7 +9,7 @@ When we think about the concept of macros, they essentially have a definition an
 * Fenced blocks preceded by a label definition `[like this]:`
 * Angle bracket style links to those definitions `<#like this>`
 
-Keep in mind that this file is designed to be run by <1_Starting_Point.md>, so the named blocks don't have meaning in this context. If blocks are named, it's because they're reused by later stages in the bootstrapping process.
+These aren't really valid Markdown, but they're close enough to keep in the same spirit. Keep in mind that this file is designed to be run by [1_Starting_Point.md](1_Starting_Point.md), so the named blocks don't have meaning in this context.
 
 ## Tracking Macros
 
@@ -20,11 +20,12 @@ files = {}
 macros = {}
 ```
 
-## Keeping a Single File
+## Initializing Program
 
-While much else may change, it still makes sense for this script to take a single file as input.
+There are a couple core libraries used throughout the code, which are imported here. While much else may change, it still makes sense for this script to take a single file as input.
 
 ```python
+import re
 import sys
 doc_file = sys.argv[1]
 ```
@@ -39,9 +40,9 @@ def record_block(descriptor, code):
     type = match[1]
     name = match[2]
     if type == "[":
-        macro[name] = code
+        macros[name] = code
     elif type == "<":
-        file[name] = code
+        files[name] = code
 ```
 
 ## Line Processing
@@ -49,21 +50,20 @@ def record_block(descriptor, code):
 Processing a line has become more complicated, as now we need to wait until a code block is complete before recording it somewhere for later use. It still needs to track if its in a code block, but now it accumulates that information in a variable for later use instead of writing immediately. Furthermore, it also must be aware of the descriptor immediately preceding that block.
 
 ```python
-with open(code_file, "w") as f:
-    descriptor = ""
-    current_block = None
-    in_code = False
-    for line in open(doc_file, "r").readlines():
-        if re.match(r"^```", line):
-            in_code = not in_code
-            if in_code:
-                current_block = []
-            else:
-                record_block(descriptor, current_block)
-        elif in_code:
-            current_block.append(line)
+descriptor = ""
+current_block = None
+in_code = False
+for line in open(doc_file, "r").readlines():
+    if re.match(r"^```", line):
+        in_code = not in_code
+        if in_code:
+            current_block = []
         else:
-            descriptor = line
+            record_block(descriptor, current_block)
+    elif in_code:
+        current_block.append(line)
+    else:
+        descriptor = line
 ```
 
 Eventually this probably makes more sense handled as a class, but the significant whitespace in Python poses a problem for this stage in the bootstrapping.
@@ -87,11 +87,14 @@ def expand_line(line):
     match = detect_unexpanded_macro(line)
     if match:
         for macro_line in macros[match[2]]:
-            lines.append(line[:match.start(1)] + macro_line + line[match.end(1):])
-        return lines
+            new_line = line[:match.start(1)] + macro_line + line[match.end(1):]
+            lines.append(re.sub(r"\n+$", "\n", new_line))
+        return expand_code(lines)
     else:
         return [line]
 ```
+
+Another nuance is that the return value of `readlines` included a trailing `\n`, which will get duplicated for any expansion. Since the original input was broken up by line, it's safe to normalize that to a single newline.
 
 ## Expanding Code Blocks
 
@@ -106,9 +109,10 @@ def expand_code(code):
 
 ## Expanding Files
 
-Finally, to output actual files, each file detected earlier is expanded and written.
+Finally, to output actual files, each file detected earlier is expanded and written. Adding some feedback so the user knows what files are generated as well.
 
 ```python
 for file in files:
+    print(f"Generating file: {file}")
     open(file, "w").writelines(expand_code(files[file]))
 ```
