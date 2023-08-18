@@ -16,7 +16,7 @@ def is_code_block(self, element):
 
 Additionally, below that code block are objects that need to be assembled into the actual text representing the code. Typically it is a single `RawText` child with a `str` as its child, but making this logic robust to changes in that API.
 
-{#ParserFunctions}: m
+{#Parser Functions}: m
 ```python
 def extract_text(self, element):
     if isinstance(element, str):
