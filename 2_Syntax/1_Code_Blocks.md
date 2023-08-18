@@ -3,12 +3,12 @@
 There are three distinct ways to represent code blocks in Markdown. Marko doesn't represent them all in the same way internally:
 
 * Indentation: `marko.block.CodeBlock`
-* Fenced with `````: `marko.block.FencedCode` [Fix emacs breaking on ```]: #
+* Fenced with ` ``` `: `marko.block.FencedCode`
 * Fenced with `~~~~`: `marko.block.FencedCode`
 
 To work around this, Tome's parser will need to provide a function to consistently determine if it's looking at a code block.
 
-[Parser Functions]: m
+{#Parser Functions}: m
 ```python
 def is_code_block(self, element):
     return isinstance(element, marko.block.CodeBlock) or  isinstance(element, marko.block.FencedCode)
@@ -16,7 +16,7 @@ def is_code_block(self, element):
 
 Additionally, below that code block are objects that need to be assembled into the actual text representing the code. Typically it is a single `RawText` child with a `str` as its child, but making this logic robust to changes in that API.
 
-[Parser Functions]: m
+{#ParserFunctions}: m
 ```python
 def extract_text(self, element):
     if isinstance(element, str):
