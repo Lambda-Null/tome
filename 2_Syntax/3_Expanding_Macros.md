@@ -8,6 +8,10 @@ Expansion of Macros can be a relatively complex subject, it's significantly more
 
 At a high level, the macro expansion process replaces instances of `<...#...>` with the macro that pattern represents. This will happen on a line by line basis, recursively expanding until no more are found.
 
+The link syntax provides a solution to a problem in other markdown-based Literate Programming tools. They either treat all macros as valid anywhere or make cross-reference between files impossible, limiting your ability to break more complex programs into multiple pages of exposition. Think of each page as a namespace, and the part of the link preceding the `#` as the full qualification necessary to get at the definitions in that namespace.
+
+## Recursive Solution
+
 The following information is necessary for this process to be successful:
 
 * The code that needs to be expanded, broken up into lines
@@ -61,12 +65,24 @@ if identifier in expanded:
     raise Exception(f"Circular reference detected for macro {location['identifier']}")
 ```
 
-The macro can either be local to the current file or a path to another file. Either way, the context should have it associated with the path.
+The macro can either be local to the current file or a path to another file. Either way, the context should have it associated with the path. When expanding macros in other files, though, the namespace used must be the one in that file instead of the current one.
 
 {#Expand macro for a line}: m
 ```python
-macros = self.context.macros[location["path"] or file]
+macro_file = location["path"] or file
+macros = self.context.macros[macro_file]
 ```
+
+If a macro isn't found, it's important to throw an error so the user knows it needs to be corrected.
+
+{#Expand macro for a line}: m
+```python
+macro = macros[location["name"]]
+if not macro:
+    raise Exception(f"Macro not found: {location['name']}")
+```
+
+## Prefix and Suffix Handling {#prefix-and-suffix}
 
 Any prefix and suffix around the macro expansion needs to be applied to each line. This is a really cool feature inspired by [Knot](https://github.com/mqsoh/knot), and is absolutely vital in languages with significant whitespace.
 
@@ -75,7 +91,7 @@ Any prefix and suffix around the macro expansion needs to be applied to each lin
 prefix = line[:location["start"]]
 suffix = line[location["end"]:]
 lines = []
-for mline in expand_macros(macros[location["name"]], file, expanded + [location["identifier"]]):
+for mline in expand_macros(macro, macro_file, expanded + [location["identifier"]]):
     lines.append(prefix + mline + suffix)
 return lines
 ```

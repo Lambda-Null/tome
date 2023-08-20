@@ -1,28 +1,25 @@
 # External Links
 
-Names defined across files have been a real problem in other Literate Programming tools, they either treat all macros as valid anywhere make cross-reference between files impossible. Programming languages have solved this problem handily with namespaces, and using link syntax as macro expansion provides a natural solution.
-
-Up until now code has had to be thrown away in subsequent stages, but with external references logic in previous stages can start being reused. As a result, more features can be included at this stage without having to reimplement logic repeatedly.
+Up until now code has had to be thrown away in subsequent stages, but this stage provides the tools necessary for reuse. As a result, more features can be included at this stage without having to reimplement logic.
 
 ## Program Structure
 
 The order of the markdown file is finally not forced. This allows creation of a couple classes to better organize the logic.
 
-<3_External_Links.py>:
+{#3_External_Links.py}: f
 ```python
 <#File class>
 <#Process arguments>
 <#Macro class>
+<#Expand macro functions>
 <#Build new files>
 ```
 
 ## Processing Arguments
 
-Since the bootstrapping process involves feeding the results of one file into the next, it will continue to make sense to only worry about a single argument for much of this process.
+Now that multiple files can be referenced, it is necessary to track any files referenced in addition to the one provided as an argument.
 
-Now that multiple files can be referenced, though, it is necessary to track any other files that are needed.
-
-[Process arguments]:
+{#Process arguments}: s
 ```python
 import sys
 doc_file = sys.argv[1]
@@ -31,11 +28,9 @@ files = { doc_file: File(doc_file) }
 
 ## File Organization
 
-With the expansion into separate files, it's becoming more relevant to keep track of the individual files. Having a class as a box for things to operate in helps keep these namespaces separate.
+With the expansion into separate files, it's becoming more relevant to keep track of the individual files. Having a class as a box for things to operate in helps keep these namespaces separate. On top of the file name, it's also important to track the code blocks involved.
 
-On top of the file name, it's also important to track the code blocks involved. This is another place where I'm still figuring out what it should look like :)
-
-[File class]:
+{#File class}: s
 ```python
 class File:
     def __init__(self, file_name):
@@ -48,7 +43,7 @@ class File:
 
 Putting I/O in the constructor can be troublesome for testing, so instead it will happen in a function that caches its results.
 
-[Cache file lines]:
+{#Cache file lines}: s
 ```python
 def lines(self):
     if not self.file_lines:
@@ -58,7 +53,7 @@ def lines(self):
 
 The overall shape of the cataloging of code blocks remains relatively unchanged.
 
-[Catalog code blocks]:
+{#Catalog code blocks}: s
 ```python
 def code_blocks(self):
     if not self.code_blocks:
@@ -70,7 +65,7 @@ def code_blocks(self):
 
 The actual accumulation of lines becomes more natural, now that macros are the ones collating the lines.
 
-[Process line]:
+{#Process line}: s
 ```python
 if re.match(r"^```", line):
     <#Identify macro>
@@ -80,9 +75,9 @@ else:
 previous_line = line
 ```
 
-Now that a file can be referenced several times, though, existing macros have to be reused. The current design means a macro object is unnecessarily created in this case, should probably be redesigned so this doesn't happen.
+Now that a file can be referenced several times, though, existing macros have to be reused. The current design means a macro object is unnecessarily created in this case, the full program has a more elegant design that should eventually be retrofitted into this logic.
 
-[Identify macro]:
+{#Identify macro}: s
 ```python
 if macro:
     macro.end_block()
@@ -97,11 +92,9 @@ else:
 
 ## Different Kinds of Macros
 
-Defining Macros as part of the `File` class would end up making that class pretty busy. It also makes it a bit complicated to group the descriptor and code block together.
+The full program didn't end up needing inheritance, so doing so here is probably a bit heavy handed. The design used there should eventually be retrofitted into this logic as well.
 
-On top of that, multiple types of macros are beginning to emerge, and inheritance will hopefully help organize their differences more effectively.
-
-[Macro class]:
+{#Macro class}: s
 ```python
 class Macro():
     <#Macro factory>
@@ -118,33 +111,28 @@ class Macro():
 <#FileMacro class>
 ```
 
-In [2_Named_Macros.md](2_Named_Macros.md), the `[foo]:` and `<foo.py>:` macros were introduced. These will need to be reimplemented here, but also a new macro in the form `(foo):` which can be defined multiple times and accumulates what's defined. As mentioned above, these will be organized as separate child classes, so adding a factory method for the classification step.
+In [2_Named_Macros.md](2_Named_Macros.md), the `{#foo}: *` form was introduced to name macros. This will need to be reimplemented here, along with an additional mode which can be defined multiple times and accumulates what's defined. Separate child classes creates the need for a factory method for the classification step.
 
-[Macro factory]:
+{#Macro factory}: s
 ```python
 def build(descriptor):
-    match = re.match(r"^(.)([^<#Descriptor terminators>]+).:", descriptor)
-    type_symbol = match[1]
-    name = match[2]
-    match type_symbol:
-        case "[":
+    match = re.match(r"^{#([^#>]+)}: (m|s|f(\+x)?)", descriptor)
+    name = match[1]
+    mode = match[2]
+    match mode:
+        case "s":
             return SingleMacro(name)
-        case "(":
+        case "m":
             return MultiMacro(name)
-        case "<":
+        case "f":
             return FileMacro(name)
-```
-
-The Regexp was really difficult to read with the terminators embedded, so calling those out here for clarity.
-
-[Descriptor terminators]:
-```python
-])>
+        case "f+x":
+            return FileMacro(name, true)
 ```
 
 Adding lines is going to happen separately, as the behavior needs to be overridden for `SingleMacro`.
 
-[Add line]:
+{#Add line}: s
 ```python
 def add_code(self, line):
     self.code_block.append(line)
@@ -152,7 +140,7 @@ def add_code(self, line):
 
 When a block is finished processing, some of the children classes will sometimes need a hook to execute specific behavior:
 
-[End block]:
+{#End block}: s
 ```python
 def end_block(self):
     pass
@@ -162,7 +150,7 @@ def end_block(self):
 
 Once the first code block is processed, the single macro needs raise an error if additional definitions are attempted.
 
-[SingleMacro class]:
+{#SingleMacro class}: s
 ```python
 class SingleMacro(Macro):
     def __init__(self, name):
@@ -182,7 +170,7 @@ class SingleMacro(Macro):
 
 The Multi Macro actually doesn't have any special behavior, but it's important to name this concept separately for clarity and consistency.
 
-[MultiMacro class]:
+{#MultiMacro class}: s
 ```python
 class MultiMacro(Macro):
     def __init__(self, name):
@@ -191,88 +179,99 @@ class MultiMacro(Macro):
 
 ### File Macro
 
-File Macros are more a concept for classification than anything else. Might change that as the rest of the code evolves :)
+File Macros behave mostly like `MultiMacro`, but need to keep track of if they will ultimately produce executable files.
 
-[FileMacro class]:
+{#FileMacro class}: s
 ```python
 class FileMacro(Macro):
-    def __init__(self, name):
+    def __init__(self, name, executable = False):
         super().__init__('file', name)
+        self.executable = True
 ```
 
 ## Expanding Macros
 
 The recursive expansion in [2_Named_Macros.md](2_Named_Macros.md) worked quite well, so that strategy will be repeated here.
 
-[Expand macros]:
+{#Expand macro functions}: s
 ```python
 <#Detect unexpanded macro>
+<#Find macro>
 <#Expand line>
 <#Expand code block>
 ```
 
 ### Expanding Lines
 
-Since other files could be referenced, the form `<#...>` must expand to allow `<...#...>`. On top of that, returning a regexp object requires other code have too intimate knowledge of how this operates, so shifting to a data structure.
+Many of these functions will take a filename in addition to the code that needs to be expanded. This is necessary to ensure that other files which also have macros to be expanded do so in their namespace.
 
-[Detect unexpanded macro]:
+{#Detect unexpanded macro}: s
 ```python
 def detect_unexpanded_macro(line):
-    match = re.match(r".*(<([^#]*)#([^>]+)>).*", line)
-    if match:
-        file = doc_file if match[2] == "" else match[2]
+    result = re.search(r"<([^#]*)#([^>]+)>", line)
+    if result:
         return {
-            "file": file,
-            "name": match[3],
-            "start": match.start(1),
-            "end": match.end(1),
+            "file": result[1],
+            "name": result[2],
+            "start": match.start(),
+            "end": match.end(),
         }
 ```
 
 One line could explode into many, so line expansion must return a list. If the line contains no macros, though, it still needs to return the original input.
 
-[Expand line]:
+{#Expand line}: s
 ```python
-def expand_line(line):
-    match = detect_unexpanded_macro(line)
-    if match:
+def expand_line(file, line):
+    result = detect_unexpanded_macro(line)
+    if result:
         <#Apply macro to line>
     else:
         return [line]
 ```
 
+Since other files could be referenced, the form `<#...>` must expand to allow `<...#...>`. On top of that, returning a regexp object requires other code have too intimate knowledge of how this operates, so shifting to a data structure.
+
+{#Find macro}: s
+```python
+def find_macro_file(current_file, location):
+    file = location["file"] or current_file
+    return files.get(file, File(file))
+```
+
 As discussed elsewhere, the prefix and suffix around the macro are applied to each line of the macro.
 
-[Apply macro to line]:
+{#Apply macro to line}: s
 ```python
 lines = []
-for macro_line in files.get(match["file"], File(match["file"])).macros[match["name"]].code_block:
-    new_line = line[:match.start(1)] + macro_line + line[match.end(1):]
+macro_file = find_macro_file(file, result)
+for macro_line in macro_file.macros[result["name"]].code_block:
+    new_line = line[:result["start"]] + macro_line + line[result["end"]:]
     lines.append(re.sub(r"\n+$", "\n", new_line))
-return expand_code(lines)
+return expand_code(macro_file.file_name, lines)
 ```
 
 ### Expanding Code Blocks
 
 The recursion is actually quite simple, all of the heavy lifting was taken care of in the line expansion.
 
-[Expand code block]:
+{#Expand code block}:
 ```python
-def expand_code(code):
+def expand_code(file, code):
     if not code:
         return []
-    return expand_line(code[0]) + expand_code(code[1:])
+    return expand_line(file, code[0]) + expand_code(file, code[1:])
 ```
 
 ## Expanding Files
 
 The only files that should be created are the ones related to the `doc_file` provided. Externally referenced files might cause trouble during the bootstrapping process.
 
-[Build new files]:
+{#Build new files}: s
 ```python
-<#Expand macros>
-
 for file_macro in [m for m in files[doc_file].macros.values() if m.type == "file"]:
-    print(f"Generating file: {file}")
-    open(file, "w").writelines(expand_macro
+    print(f"Generating file: {file_macro.name}")
+    open(file, "w").writelines(expand_code(doc_file, file_macro.lines))
+    if file_macro.executable:
+        os.chmod(file, os.stat(file_path).st_mode | 0o111)
 ```

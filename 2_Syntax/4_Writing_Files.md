@@ -35,19 +35,27 @@ def output_files(self):
     self.catalog_all_files()
 
     files = []
-    for file in self.context.files:
+    for project_path, system_path in self.context.files.items():
         {#Accumulate outputs for file}
 
     return files
 ```
 
-Files can have multiple output files, which each need to be expanded separately.
+Files can have multiple output files, which each need to be expanded separately. There are a few considerations to keep in mind when identifying the path of the new file:
+
+* Absolute paths are relative to the project root
+* Relative paths are relative to the markdown file
 
 {#Accumulate outputs for file}: s
 ```python
-for output_file in self.context.macros[file].files():
+for output_file in self.context.macros[project_path].files():
+    path = output_file.name
+    if path[0] == "/":
+        path = self.context.absolute_path(path)
+    else:
+        path = system_path.parent / path
     files.append(OutputFile(
-        self.context.absolute_path(output_file.name),
+        path,
         output_file.mode == "f+x",
         expand_macros(output_file.lines, file, [output_file.name])
     ))

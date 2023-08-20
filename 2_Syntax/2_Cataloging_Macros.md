@@ -4,6 +4,15 @@ For those unfamiliar, a [macro](https://en.wikipedia.org/wiki/Macro_(computer_sc
 
 [Section 1](1_Code_Blocks.md) covered how code blocks are detected and associated with a name. This section deals with how they're cataloged. Expansion of those macros, including how macros in other files are pulled in, is covvered in [section 3](3_Expanding_Macros.md).
 
+## Links as Macros
+
+Macros essentially have a definition and places that reference that definition. Links follow a similar pattern, so macros in Tome extend the link syntax of Markdown.
+
+* Descriptors share the `{#...}` syntax with [heading anchors](https://www.markdownguide.org/extended-syntax/#heading-ids)
+* [Angle brackets](https://www.markdownguide.org/basic-syntax/#urls-and-email-addresses) are used to reference those definitions `<#like this>`
+
+Neither of these forms are strictly valid markdown, but they follow the semantic meaning nicely enough to feel natural building a project using them.
+
 ## Types of Macros
 
 The different types of macros serve different purposes, going to contain that in a class called `Macro`. It's tempting to create an inheritance hierarchy out of the different possibilities, but because there are so few the logic navigating that hierarchy would exceed the benefits.

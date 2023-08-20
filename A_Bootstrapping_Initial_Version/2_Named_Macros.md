@@ -1,15 +1,8 @@
 # Named Macros
 
-A version of this program which allows named macros to be expanded would greatly expand our capabilities for subsequent stages of the bootstrap process. It's a core feature of literate programming, and will allow subsequent phases to be tangled in a more natural manner.
+This stage in the bootstrapping process ensures creates a version which supports named macros within the same file. See [the chapter on syntax](/2_Syntax) to learn more about what is supported here.
 
-## Links as Macros
-
-When we think about the concept of macros, they essentially have a definition and places that reference that definition. This is precisely the same relationships that links have, so we can think of macros simply as links within code. Since we're in the midst of bootstrapping, though, this behavior will be considerably constrained:
-
-* Fenced blocks preceded by a label definition `[like this]:`
-* Angle bracket style links to those definitions `<#like this>`
-
-These aren't really valid Markdown, but they're close enough to keep in the same spirit. Keep in mind that this file is designed to be run by [1_Starting_Point.md](1_Starting_Point.md), so the named blocks don't have meaning in this context.
+Keep in mind that this file is designed to be passed to the script created by [1_Starting_Point.md](1_Starting_Point.md), so the named blocks don't have meaning in this context.
 
 ## Tracking Macros
 
@@ -20,7 +13,7 @@ files = {}
 macros = {}
 ```
 
-## Initializing Program
+## Imports
 
 There are a couple core libraries used throughout the code, which are imported here. While much else may change, it still makes sense for this script to take a single file as input.
 
@@ -32,22 +25,22 @@ doc_file = sys.argv[1]
 
 ## File Naming
 
-With named blocks, it's no longer the case that fenced blocks can just be assembled in order. It therefore becomse necessary to come up with a syntax for indicating that the described block will become the named file. Since `[this]:` defines a block that's expanded within the document, perhaps `<this.py>:` is a good way to define a block expanded outside of the document.
+With named blocks, it's no longer the case that fenced blocks can just be assembled in order. See the [page on macro expansion](/2_Syntax/3_Expanding_Macros.md) for more information on the syntax.
 
 ```python
 def record_block(descriptor, code):
-    match = re.match(r"^(.)([^]]+).:", descriptor)
-    type = match[1]
-    name = match[2]
-    if type == "[":
+    match = re.match(r"^{#([^}#]+)}: (.)", descriptor)
+    name = match[1]
+    type = match[2]
+    if type == "s":
         macros[name] = code
-    elif type == "<":
+    elif type == "f":
         files[name] = code
 ```
 
 ## Line Processing
 
-Processing a line has become more complicated, as now we need to wait until a code block is complete before recording it somewhere for later use. It still needs to track if its in a code block, but now it accumulates that information in a variable for later use instead of writing immediately. Furthermore, it also must be aware of the descriptor immediately preceding that block.
+Processing a line has become more complicated, as now it must be deferred until a code block is complete before recording it somewhere for later use. Now the logic accumulates that information in a variable for later use instead of writing immediately. Furthermore, the descriptor immediately preceding that block must also be tracked.
 
 ```python
 descriptor = ""
@@ -66,8 +59,6 @@ for line in open(doc_file, "r").readlines():
         descriptor = line
 ```
 
-Eventually this probably makes more sense handled as a class, but the significant whitespace in Python poses a problem for this stage in the bootstrapping.
-
 ## Detecting Unexpanded Macros
 
 Within a block of code, it's necessary to identify what macros are unexpanded and where they are. Earlier the code was broken into individual lines to make some logic during the expansion process easier, this makes a line a more appropriate choice here than the full block.
@@ -79,7 +70,7 @@ def detect_unexpanded_macro(line):
 
 ## Expanding Lines
 
-To expand a macro, the position of the match must be used. Rather than the naive expansion usually seen, though, I'm going to draw inspiration from [Knot](https://github.com/mqsoh/knot) and treat what's preceding and following the macro as a prefix and suffix for each line in the expansion. This may seem like a big feature to include in such an early phase in the bootstrapping process, but because Python has significant whitespace it's important for maintaining correct indentation during expansion.
+To expand a macro, the position of the match must be used. Additionally, [prefixes and suffixes are added to each line](/2_Syntax/3_Expanding_Macros.md#prefixes-and-suffixes).
 
 ```python
 def expand_line(line):

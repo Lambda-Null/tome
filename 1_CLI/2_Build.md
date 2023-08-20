@@ -16,8 +16,31 @@ The [project context](/3_Project_Structure/1_Context.md) builds up a collection 
 
 ## Preparations
 
-TODO: Satisfy dependencies `pip install marko`
-TODO: Clear previous build
+Before Tome can run, it needs to install some dependencies. The bootstrapping command should take care of this, but it also has a project command that can be used called `dependencies`.
+
+{#/.tome/commands/dependencies}: f+x
+```shell
+#!/bin/sh
+pip install -r ../requirements.txt
+```
+
+The only dependency right now is [Marko](https://marko-py.readthedocs.io/en/latest/):
+
+{#/.tome/requirements.txt}: f
+```
+marko==2.0.0
+```
+
+## Build Directory
+
+Large projects typically rename and move around files as needs evolve and the design is refined. When this occurs, the old file can linger causing issues. To combat this, the `build` directory will be deleted before generating new files.
+
+{#/build/bin/commands/build}: f+x
+```python
+(context.project_root / "build").rmdir()
+```
+
+It's perfectly valid to define files outside of the `build` directory, just keep in mind that if they are renamed or removed it will have to be addressed manually.
 
 ## Building Root Directory
 

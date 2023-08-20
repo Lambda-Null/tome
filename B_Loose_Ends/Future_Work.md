@@ -15,7 +15,26 @@ Here's a collection of various ideas to explore for this project:
 * Blocks within documentation that are dynamically expanded, such as table of contents
 * Macros defined with `(...):` require multiple definitions
 * Examples as unit tests
-* Make the executable more portable using [PyInstaller](https://pyinstaller.org/en/stable/)
 * Help text generated from markdown file
 * Text editor extensions
 * Some form to reduce duplicated lines, such as the same thing being imported
+
+## Discussing These Ideas
+
+If you have thoughts on a particular concept, it should be included in this document. Here are the only requirements to have a PR accepted to modify this page:
+
+* No cursing
+* No insulting
+* Apart from a preamble describing the idea in more detail, paragraphs are preceded with `username:`
+* If a new section is created that corresponds to an item in the list at the top of this page, the item is removed
+* Comments are relevant to the section topic
+
+This list may be updated if particular issues come up, but outside of that anything is fair game. Do not be afraid to submit a PR, it's a great way to share thoughts as you begin designing a new feature.
+
+lackita: Like how meta this first discussion is? I thought it would be a good way to illustrate what I'm going for.
+
+## Executable
+
+Right now the program is assembled by the user, including going through the bootstrap process. On top of that, it's only really possible to run it on Unix based systems right now. This will severely limit adoption, and should be one of the first problems that's solved.
+
+lackita: My initial thought is a tool like [PyInstaller](https://pyinstaller.org/en/stable/) could be used, but I'm not too familiar with that tool.

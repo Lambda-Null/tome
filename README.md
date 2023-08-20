@@ -14,13 +14,11 @@ Tome is a literate programming tool aimed at working effectively in large scale 
 
 Right now, installing Tome is a manual process. There's some [future work](/B_Loose_Ends/Future_Work.md) to package executables for various operating systems, but for now you will have to [bootstrap the program yourself](A_Bootstrapping_Initial_Version/README.md). Also be aware that this has only been tested on Ubuntu 23.04, if you run into issues using it in other contexts feel free to submit a Pull Request.
 
-TODO: Narrate the basic usage
-* Init
-* Write a file
-* Write/use a macro
-* Write a second file
-* Use the second file in the first
-* Provide pointers to various parts of the documentation
+Here's a quick start:
+
+* Run the command `tome init` in a directory to initialize it as a Tome project
+* Write some markdown files in that directory using the syntax described in [Chapter 2](/2_Syntax)
+* Run the command `tome build`
 
 ## What is Literate Programming
 

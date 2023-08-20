@@ -51,12 +51,19 @@ def add_directory(self, path):
         self.add_file(file)
 ```
 
-A path in the local operating system is provided when files are added, but absolute paths within the markdown files will be in relation to the project root. A key responsibility of this class is to provide a translation layer between project paths and operating system paths.
+A path in the local operating system is provided when files are added, but absolute paths within the markdown files will be in relation to the project root.
+
+{#Convert system path to project path}: s
+```python
+"/" + file.absolute().relative_to(self.project_root).to_posix()
+```
+
+A key responsibility of this class is to provide a translation layer between project paths and operating system paths.
 
 {#Context functions}: m
 ```python
 def add_file(self, file):
-    self.files["/" + file.absolute().relative_to(self.project_root).to_posix()] = file.absolute()
+    self.files[<#Convert system path to project path>] = file.absolute()
 ```
 
 With the path in macro expansion being relative to the project root, it's also necessary to provide an external API to translate those into absolute paths.
