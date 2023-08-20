@@ -1,14 +1,21 @@
 # Conventions
 
-Tome makes assumes that particular conventions are followed:
+Here are some conventions that will need to be followed to satisfy technical requirements in Tome:
 
 * The tangled program is placed in a directory called `build` at the root level
-* All Markdown files end in `.md`
-* Each directory containing documentation also contains a `README.md`, which includes a table of contents for the contents of that directory
-* There is a single line of whitespace prior to the descriptor of a code block and immediately following the codeblock
-* Additional work that is needed is flagged with the word `TODO`
-* Possessive words like "I"
-* First word of macro name is capitalized and the rest of the words are lowercased
-* If a file creates a file meant to imported, the import statement is provided in a macro called `Import`
+  + Other files within the project will also be generated, but will not be automatically removed if the name is changed or removed
+* All Markdown files must end in `.md`
+* There is a single line of whitespace prior to the descriptor of a code block
+  + Lack of separation will cause the descriptor to get mixed up in the preceding paragraph
 
-There are some decent reasons to break these, Tome certainly needs to in some cases. Just be aware that things might get a bit wonky if this is done.
+In addition, the following conventions are recommended to make the navigation of Tome projects easier:
+
+* Each directory containing documentation also contains a `README.md`
+  + This is rendered automatically when a directory is visited in most sites hosting source code
+* If there is a natural order to how documentation should be read, include a prefix in the filename with a number
+  + Example: `1_Name_for_Chapter_1.md`
+  + Most sites hosting source code sort files, this allows you to control the order of directory contents
+* Words indicating ownership such as "I" and "my" should be avoided
+  + Larger scale projects depend on contributions by many people, who may feel discouraged from doing so if an individual is claiming ownership
+* First word of macro name is capitalized and the rest of the words are lowercased
+  + Macro names are case sensitive, and without some consistency this is an easy mistake to make

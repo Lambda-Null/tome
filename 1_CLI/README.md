@@ -70,6 +70,8 @@ if not os.environ["PYTHONPATH"]:
 os.environ["PYTHONPATH"] += executable.parent.parent
 ```
 
+## Prebuilt Commands
+
 The files in `/build/bin/commands/` are scripts which share the command name provided. If a command isn't found there, commands defined for the particular project will be executed.
 
 {#/build/bin/tome}: f+x
@@ -80,6 +82,8 @@ if not command_path.exists():
     <#Locate script within project context>
 ```
 
+## Project Commands {#project-commands}
+
 The motivation for using scripts instead of libraries is to allow commands to be implemented in any language. Tome itself will define all of these in Python, but any scripts in `/.tome/commands/` of the project will be invoked if a core command doesn't exist.
 
 {#Locate script within project context}: s
@@ -88,6 +92,8 @@ The motivation for using scripts instead of libraries is to allow commands to be
 if context:
     command_path = context.root / ".tome" / "commands" / command
 ```
+
+## Missing Commands
 
 If the command isn't defined anywhere, the help command is used.
 
