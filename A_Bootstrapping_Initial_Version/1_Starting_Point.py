@@ -1,6 +1,4 @@
-# This script should be the only code directly checked in to the
-# codebase. It was generated from 1_Starting_Point.md, see read that
-# page to better understand this script.
+# This script was generated from 1_Starting_Point.md, it should not be modified directly. Read that document to understand how this should be used.
 import sys
 doc_file = sys.argv[1]
 import re

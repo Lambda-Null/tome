@@ -8,7 +8,7 @@ For those unfamiliar, a [macro](https://en.wikipedia.org/wiki/Macro_(computer_sc
 
 Macros essentially have a definition and places that reference that definition. Links follow a similar pattern, so macros in Tome extend the link syntax of Markdown.
 
-* Descriptors share the `{#...}` syntax with [heading anchors](https://www.markdownguide.org/extended-syntax/#heading-ids)
+* Descriptors share the `{#...}` syntax with [heading anchors](https://www.markdownguide.org/extended-syntax/#heading-ids), although need to be quoted in `` `s to avoid funny rendering such as underscores in a filename
 * [Angle brackets](https://www.markdownguide.org/basic-syntax/#urls-and-email-addresses) are used to reference those definitions `<#like this>`
 
 Neither of these forms are strictly valid markdown, but they follow the semantic meaning nicely enough to feel natural building a project using them.
@@ -17,7 +17,7 @@ Neither of these forms are strictly valid markdown, but they follow the semantic
 
 The different types of macros serve different purposes, going to contain that in a class called `Macro`. It's tempting to create an inheritance hierarchy out of the different possibilities, but because there are so few the logic navigating that hierarchy would exceed the benefits.
 
-{#/build/macro.py}: f
+`{#/build/macro.py}: f`
 ```python
 class Macro():
     def __init__(self, name, mode):
@@ -31,7 +31,7 @@ class Macro():
 
 Since many macros have the ability to be specified multiple times, adding code as a separate function is the lowest common denominator. Marko provides the text within these blocks newlines and all, so that will have to split apart so a prefix and suffix can be added to each line later on. This includes a trailing newline that needs to be trimmed, but only one as any additional trailing whitespace needs to be retained.
 
-{#Base functions}: m
+`{#Base functions}: m`
 ```python
 def add_code(self, code):
     self.lines += code.removesuffix("\n").split("\n")
@@ -40,10 +40,10 @@ def add_code(self, code):
 
 In the case of `s`, this also needs to throw an error if called after the first code block is added. This could have been handled with a boolean, but a count could provide additional functionality later on.
 
-{#Handle validation of "s" mode}:
+`{#Handle validation of "s" mode}: s`
 ```python
 self.code_blocks += 1
-if self.mode == "s" && self.code_blocks > 1:
+if self.mode == "s" and self.code_blocks > 1:
     raise Exception(f"Macro {self.name} received a second code block with mode {self.mode}")
 ```
 
@@ -57,7 +57,7 @@ The organization of macros has many different responsibilities:
 
 All of these factors will be collected into a single class:
 
-{#/build/macro_registry.py}: f
+`{#/build/macro_registry.py}: f`
 ```python
 <#Macro imports>
 
@@ -70,20 +70,22 @@ class MacroRegistry():
 
 To deal with the potential appending nature of some macros, it needs a function that either finds or creates a new macro.
 
-{#Registry functions}: m
+`{#Registry functions}: m`
 ```python
 def request(self, name, mode = None):
-    macro = self.macros[name]:
-    if macro:
+    macro = None
+    if name in self.macros:
+        macro = self.macros[name]
         <#Validate macro>
     else:
         <#Create new macro>
+        self.macros[name] = macro
     return macro
 ```
 
 If the macro retrieved has a different mode than the one described, this is an inconsistency that might cause problems during generation. Also allowing the mode to remain unspecified, so the logic can be reused during macro expansion. The logic that parsed the line initially is responsible for ensuring that mode is present.
 
-{#Validate macro}: s
+`{#Validate macro}: s`
 ```python
 if mode and macro.mode != mode:
     raise Exception(f"Macro {name} has an inconsistent mode")
@@ -91,12 +93,12 @@ if mode and macro.mode != mode:
 
 Creation of the Macro should only happen if the mode is specified. If it's not, that suggests the system got to expansion without defining that macro. File names are just as valid for expansion as other macros, it might not be very likely but there's not a good reason to limit that ability.
 
-{#Macro imports}: m
+`{#Macro imports}: m`
 ```python
 from macro import Macro
 ```
 
-{#Create new macro}: s
+`{#Create new macro}: s`
 ```python
 if not mode:
     raise Exception(f"Macro {name} was never created")
@@ -105,22 +107,22 @@ macro = Macro(name, mode)
 
 During generation, just the files will need to be pulled out as a starting point for expansion.
 
-{#Macro imports}: m
+`{#Macro imports}: m`
 ```python
 import re
 ```
 
-{#Registry functions}: m
+`{#Registry functions}: m`
 ```python
 def files(self):
-    return [macro for macro in self.macros.values if re.match(r"^f", macro.mode)]
+    return [macro for macro in self.macros.values() if re.match(r"^f", macro.mode)]
 ```
 
 ## Accumulating Macros
 
 At this point, all of the pieces are necessary to pull macros in a file out and store them. This incorporates several functions defined in the preceding sections.
 
-{#Parser functions}: m
+`{#Parser functions}: m`
 ```python
 def catalog_macros(self, path):
     registry = MacroRegistry()
@@ -129,4 +131,13 @@ def catalog_macros(self, path):
         macro = registry.request(descriptor["name"], descriptor["mode"])
         macro.add_code(code_block["code"])
     return registry
+```
+
+## External References
+
+Other files can include this macro to import the library:
+
+`{#Imports}: s`
+```python
+from macro_registry import MacroRegistry
 ```

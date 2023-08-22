@@ -16,8 +16,12 @@ Here's a collection of various ideas to explore for this project:
 * Macros defined with `(...):` require multiple definitions
 * Examples as unit tests
 * Help text generated from markdown file
-* Text editor extensions
+* Text editor extensions, perhaps using LSP
 * Some form to reduce duplicated lines, such as the same thing being imported
+* Emacs projectile project description
+* Shift all responsibility for manipulating files and directories to the context
+* Move Context class to README of chapter and break its current section up
+* Replace third party library parsing with custom logic
 
 ## Discussing These Ideas
 

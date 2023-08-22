@@ -29,7 +29,7 @@ With named blocks, it's no longer the case that fenced blocks can just be assemb
 
 ```python
 def record_block(descriptor, code):
-    match = re.match(r"^{#([^}#]+)}: (.)", descriptor)
+    match = re.match(r"^`{#([^}#]+)}: (.)`", descriptor)
     name = match[1]
     type = match[2]
     if type == "s":
