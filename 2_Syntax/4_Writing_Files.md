@@ -51,7 +51,7 @@ Files can have multiple output files, which each need to be expanded separately.
 for output_file in self.context.macros[project_path].files():
     path = output_file.name
     if path[0] == "/":
-        path = self.context.absolute_path(path)
+        path = self.context.absolute_path(self.context.resolve_relative_path(Path(project_path), path))
     else:
         path = system_path.parent / path
     files.append(OutputFile(
@@ -67,7 +67,7 @@ When writing output files, it's important to keep in mind that it could be speci
 ```python
 def write(self):
     self.path.parent.mkdir(parents=True, exist_ok=True)
-    self.path.write_text(self.contents)
+    self.path.write_text("\n".join(self.contents) + "\n")
     if self.executable:
-        self.path.chmod(file_path.stat().st_mode | 0o111)
+        self.path.chmod(self.path.stat().st_mode | 0o111)
 ```

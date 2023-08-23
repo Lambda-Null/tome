@@ -33,14 +33,14 @@ Macro expansion takes the form `<path#name>`, which is pretty easy to pick out w
 
 `{#Parser functions}: m`
 ```python
-def detect_macro(self, line):
+def detect_macro(self, line, file):
     result = re.search(r"<(([^>#]*)#([^>#]+))>", line)
     if result:
         return {
             "start": result.start(),
             "end": result.end(),
             "identifier": result.group(1),
-            "path": result.group(2),
+            "path": result.group(2) and self.context.resolve_relative_path(Path(file), result.group(2)),
             "name": result.group(3),
         }
 ```
@@ -50,7 +50,7 @@ The actual expansion of a line varies depending on if a macro was found. Even if
 `{#Parser functions}: m`
 ```python
 def expand_line(self, line, file, expanded):
-    location = self.detect_macro(line)
+    location = self.detect_macro(line, file)
     if location:
         <#Expand macro for a line>
     else:
@@ -67,10 +67,15 @@ if location["identifier"] in expanded:
 
 The macro can either be local to the current file or a path to another file. Either way, the context should have it associated with the path. When expanding macros in other files, though, the namespace used must be the one in that file instead of the current one.
 
+`{#Imports}: m`
+```python
+from pathlib import Path
+```
+
 `{#Expand macro for a line}: m`
 ```python
 macro_file = location["path"] or file
-macros = self.context.macros[macro_file]
+macros = self.context.macros[str(self.context.resolve_relative_path(Path(file), macro_file))]
 macro = macros.request(location["name"])
 ```
 

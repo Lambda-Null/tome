@@ -47,6 +47,7 @@ Once everything has been built, the `build` directory can be safely deleted and 
 `{#Replace build directory with new version}: s`
 ```python
 import shutil
+print(f"replacing {context.project_root / 'build'} with {context.staged_root / 'build'}")
 shutil.rmtree(context.project_root / "build")
 context.unstage()
 ```
@@ -62,7 +63,7 @@ Each of the files in the context needs to be [parsed](/2_Syntax). That process w
 </2_Syntax/README.md#Import>
 parser = Parser(context)
 for file in parser.output_files():
-    print(f"Writing {file.name}")
+    print(f"Writing {file.path}")
     file.write()
 
 <#Replace build directory with new version>

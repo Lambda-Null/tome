@@ -180,7 +180,7 @@ Similarly, it's fine for the contents to be merged with directories already in t
 `{#Unstage directory}: s`
 ```python
 target_dir = target / child.name
-if not target_dir.exists() and not target_dir.is_dir():
+if target_dir.exists() and not target_dir.is_dir():
     raise Exception(f"Trying to replace {target_dir}, but it's currently a file")
 target_dir.mkdir(exist_ok = True)
 self.unstage(child, target_dir)
@@ -196,8 +196,18 @@ import re
 
 `{#Context functions}: m`
 ```python
-def is_staged(project_path):
-    return [regexp for regexp in self.staged if re.search(regexp, project_path)]
+def is_staged(self, project_path):
+    return [regexp for regexp in self.staged if re.search(regexp, str(project_path))]
+```
+
+Determining the absolute path has a few components. As discussed before, choosing between the staged and relative path is important. Before that can occur, though, any relative paths that are provided need to be resolved, and for that a reference path is necessary.
+
+`{#Context functions}: m`
+```python
+def resolve_relative_path(self, reference, project_path):
+    if not reference.is_dir():
+        reference = reference.parent
+    return (reference / project_path).resolve()
 ```
 
 When other parts of the codebase need to interact with a file, they need to be aware of the absolute path to use. This of course will be different depending on if the file is staged.
@@ -205,6 +215,6 @@ When other parts of the codebase need to interact with a file, they need to be a
 `{#Context functions}: m`
 ```python
 def absolute_path(self, project_path):
-    base_path = self.staged_root if self.is_staged(project_path) else self.project_path
-    return base_path / re.sub(r"^/", "", project_path)
+    base_path = self.staged_root if self.is_staged(project_path) else self.project_root
+    return base_path / re.sub(r"^/", "", str(project_path))
 ```

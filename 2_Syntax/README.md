@@ -78,6 +78,7 @@ Some of those files will also need to import additional libraries for some of th
 ```python
 <1_Code_Blocks.md#Imports>
 <2_Cataloging_Macros.md#Imports>
+<3_Expanding_Macros.md#Imports>
 <4_Writing_Files.md#Imports>
 ```
 
