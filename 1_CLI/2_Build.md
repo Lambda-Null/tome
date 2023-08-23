@@ -21,7 +21,7 @@ Before Tome can run, it needs to install some dependencies. The bootstrapping co
 `{#/.tome/commands/dependencies}: f+x`
 ```shell
 #!/bin/sh
-pip install -r ../requirements.txt
+pip install -r $PROJECT_ROOT/.tome/requirements.txt
 ```
 
 The only dependency right now is [Marko](https://marko-py.readthedocs.io/en/latest/):

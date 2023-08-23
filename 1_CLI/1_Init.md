@@ -18,9 +18,11 @@ Any meta information needed to operate is stored in a directory at the project r
 
 `{#Create files and directories}: m`
 ```python
+</3_Project_Structure/1_Context.md#Import>
+context = Context(Path.cwd())
 print("Creating .tome")
-dot_tome = context.root / ".tome"
-dot_tome.mkdir(exists_ok = True)
+dot_tome = context.project_root / ".tome"
+dot_tome.mkdir(exist_ok = True)
 ```
 
 ## Git Accomodations
@@ -40,5 +42,5 @@ By convention, the `build` directory is where all generated files go. Typically 
 `{#Create files and directories}: m`
 ```python
 print("Creating .gitignore")
-(context.root / ".gitignore").write_text("build")
+(context.project_root / ".gitignore").write_text("build")
 ```

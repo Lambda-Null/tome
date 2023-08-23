@@ -71,6 +71,7 @@ if "PYTHONPATH" in os.environ:
 else:
     os.environ["PYTHONPATH"] = ""
 os.environ["PYTHONPATH"] += str(executable.parent.parent)
+sys.path.append(str(executable.parent.parent))
 ```
 
 ## Prebuilt Commands
@@ -87,13 +88,14 @@ if not command_path.exists():
 
 ## Project Commands {#project-commands}
 
-The motivation for using scripts instead of libraries is to allow commands to be implemented in any language. Tome itself will define all of these in Python, but any scripts in `/.tome/commands/` of the project will be invoked if a core command doesn't exist.
+The motivation for using scripts instead of libraries is to allow commands to be implemented in any language. Tome itself will define all of these in Python, but any scripts in `/.tome/commands/` of the project will be invoked if a core command doesn't exist. Within these commands, knowing the project root is extremely helpful in operating on various generated files, so providing the environment variable `PROJECT_ROOT`.
 
 `{#Locate script within project context}: s`
 ```python
 </3_Project_Structure/1_Context.md#Establish project context>
 if context:
-    command_path = context.root / ".tome" / "commands" / command
+    command_path = context.project_root / ".tome" / "commands" / command
+    os.environ["PROJECT_ROOT"] = str(context.project_root)
 ```
 
 ## Missing Commands
@@ -106,6 +108,8 @@ if not command_path.exists():
     command = "help"
     command_path = executable.parent / "commands" / command
 ```
+
+## Executing Command
 
 Since there's nothing left to do except execute the command, the `exec*` class of functions can be used. This is most likely a micro-optimization, but it makes the process of conveying the exit code to the caller easier.
 
