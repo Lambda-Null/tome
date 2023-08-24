@@ -81,14 +81,15 @@ macro = macros.request(location["name"])
 
 ## Prefix and Suffix Handling {#prefix-and-suffix}
 
-Any prefix and suffix around the macro expansion needs to be applied to each line. This is a really cool feature inspired by [Knot](https://github.com/mqsoh/knot), and is absolutely vital in languages with significant whitespace.
+Any prefix and suffix around the macro expansion needs to be applied to each line. This is a really cool feature inspired by [Knot](https://github.com/mqsoh/knot), and is absolutely vital in languages with significant whitespace (like Python).
 
 `{#Expand macro for a line}: m`
 ```python
 prefix = line[:location["start"]]
 suffix = line[location["end"]:]
-lines = []
-for mline in self.expand_macros(macro.lines, macro_file, expanded + [location["identifier"]]):
-    lines.append(prefix + mline + suffix)
-return lines
+return self.expand_macros(
+    [prefix + mline + suffix for mline in macro.lines],
+    macro_file,
+    expanded + [location["identifier"]],
+)
 ```

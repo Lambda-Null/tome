@@ -22,6 +22,7 @@ Here's a collection of various ideas to explore for this project:
 * Shift all responsibility for manipulating files and directories to the context
 * Move Context class to README of chapter and break its current section up
 * Replace third party library parsing with custom logic
+* Execute macro as command and embed that with `<#!...>`
 
 ## Discussing These Ideas
 

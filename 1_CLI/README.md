@@ -32,7 +32,7 @@ Since project specific commands can also be defined, those should be listed here
 `{#/build/bin/commands/help}: f+x`
 ```python
 </3_Project_Structure/1_Context.md#Establish project context>
-commands = context.root / ".tome" / "commands"
+commands = context.project_root / ".tome" / "commands"
 if commands.is_dir():
     <#Print project specific help>
 ```
