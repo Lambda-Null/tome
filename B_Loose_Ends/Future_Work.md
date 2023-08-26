@@ -23,6 +23,11 @@ Here's a collection of various ideas to explore for this project:
 * Move Context class to README of chapter and break its current section up
 * Replace third party library parsing with custom logic
 * Execute macro as command and embed that with `<#!...>`
+* Tab completion on commands
+* Macros in macro names
+* Builtin macros for things related to Tome one may want to reference in their project
+* Command to ask ChatGPT to write a section
+* Report line numbers for failure
 
 ## Discussing These Ideas
 

@@ -101,7 +101,7 @@ from macro import Macro
 `{#Create new macro}: s`
 ```python
 if not mode:
-    raise Exception(f"Macro {name} was never created")
+    raise Exception(f"Macro `{name}` was never created")
 macro = Macro(name, mode)
 ```
 
