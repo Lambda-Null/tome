@@ -62,7 +62,8 @@ All of these factors will be collected into a single class:
 <#Macro imports>
 
 class MacroRegistry():
-    def __init__(self):
+    def __init__(self, source):
+        self.source = source
         self.macros = {}
 
     <#Registry functions>
@@ -101,7 +102,7 @@ from macro import Macro
 `{#Create new macro}: s`
 ```python
 if not mode:
-    raise Exception(f"Macro `{name}` was never created")
+    raise Exception(f"Macro `{name}` was never created for `{self.source}`")
 macro = Macro(name, mode)
 ```
 
@@ -125,7 +126,7 @@ At this point, all of the pieces are necessary to pull macros in a file out and 
 `{#Parser functions}: m`
 ```python
 def catalog_macros(self, path):
-    registry = MacroRegistry()
+    registry = MacroRegistry(path)
     for code_block in self.extract_code_blocks(self.parse_file(path)):
         descriptor = code_block["descriptor"]
         macro = registry.request(descriptor["name"], descriptor["mode"])
