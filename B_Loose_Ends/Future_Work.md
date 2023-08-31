@@ -28,6 +28,8 @@ Here's a collection of various ideas to explore for this project:
 * Builtin macros for things related to Tome one may want to reference in their project
 * Command to ask ChatGPT to write a section
 * Report line numbers for failure
+* Wildcard filename, both `*` and `**`
+* Stage /.tome/commands directory
 
 ## Discussing These Ideas
 

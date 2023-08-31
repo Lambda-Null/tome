@@ -29,12 +29,16 @@ def expand_macros(self, lines, file, expanded):
     return result
 ```
 
-Macro expansion takes the form `<path#name>`, which is pretty easy to pick out with a regular expression. The result of such a match can be pretty opaque, though, so the return value is converted to a dictionary.
+Macro expansion takes the form `<path#name>`, which is pretty easy to pick out with a regular expression. The result of such a match can be pretty opaque, though, so the return value is converted to a dictionary. The prefix and suffix are on a separate line to prevent that regexp from getting detected as a macro by Tome.
 
 `{#Parser functions}: m`
 ```python
 def detect_macro(self, line, file):
-    result = re.search(r"<(([^>#]*)#([^>#]+))>", line)
+    prefix = "<"
+    suffix = ">"
+    result = re.search(rf"{prefix}(()#([^>#]+)){suffix}", line)
+    if not result:
+        result = re.search(rf"{prefix}(([^>#]+)#([^>#]+)){suffix}", line)
     if result:
         return {
             "start": result.start(),
@@ -44,6 +48,8 @@ def detect_macro(self, line, file):
             "name": result.group(3),
         }
 ```
+
+One nuance here is that macros local to the current file are prioritized over macros in other files. If it always expands the first macro, when the current file shifts subsequent references to the current file would be perceived as part of the file that was shifted to.
 
 The actual expansion of a line varies depending on if a macro was found. Even if it's not, other functions are still expecting this function to return a list.
 
