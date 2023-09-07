@@ -44,7 +44,7 @@ In the case of `s`, this also needs to throw an error if called after the first 
 ```python
 self.code_blocks += 1
 if self.mode == "s" and self.code_blocks > 1:
-    raise Exception(f"Macro {self.name} received a second code block with mode {self.mode}")
+    raise Exception(f"Macro `{self.name}` received a second code block with mode {self.mode}")
 ```
 
 ## Organizing by Name
@@ -89,7 +89,7 @@ If the macro retrieved has a different mode than the one described, this is an i
 `{#Validate macro}: s`
 ```python
 if mode and macro.mode != mode:
-    raise Exception(f"Macro {name} has an inconsistent mode")
+    raise Exception(f"Macro `{name}` has an inconsistent mode")
 ```
 
 Creation of the Macro should only happen if the mode is specified. If it's not, that suggests the system got to expansion without defining that macro. File names are just as valid for expansion as other macros, it might not be very likely but there's not a good reason to limit that ability.

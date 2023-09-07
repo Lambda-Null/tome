@@ -30,6 +30,7 @@ Here's a collection of various ideas to explore for this project:
 * Report line numbers for failure
 * Wildcard filename, both `*` and `**`
 * Stage /.tome/commands directory
+* Define macros in tables easily
 
 ## Discussing These Ideas
 
