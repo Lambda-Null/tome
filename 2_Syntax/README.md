@@ -13,6 +13,11 @@ This README ties the functionality described in each of those sections together 
 
 Consider the parsing library for Tome. It uses [Marko](https://marko-py.readthedocs.io/en/latest/) to parse Markdown, so the file is started like this:
 
+`{#dependencies}: m`
+```
+marko==2.0.0
+```
+
 `{#/build/parser.py}: f`
 ```python
 import marko

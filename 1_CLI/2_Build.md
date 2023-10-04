@@ -24,11 +24,12 @@ Before Tome can run, it needs to install some dependencies. The bootstrapping co
 pip install -r $PROJECT_ROOT/.tome/requirements.txt
 ```
 
-The only dependency right now is [Marko](https://marko-py.readthedocs.io/en/latest/):
+Right now, Tome doesn't have the ability to define a macro across multiple files. As an interim solution, all of the dependencies referenced throughout the project will need to be pulled into `requirements.txt` here:
 
 `{#/.tome/requirements.txt}: f`
 ```
-marko==2.0.0
+</2_Syntax/README.md#dependencies>
+</4_LLM_Revisions/README.md#dependencies>
 ```
 
 ## Replacing Build Directory {#replacing-build-directory}
