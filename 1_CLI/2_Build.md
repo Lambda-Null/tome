@@ -48,7 +48,11 @@ Once everything has been built, the `build` directory can be safely deleted and 
 ```python
 import shutil
 print(f"replacing {context.project_root / 'build'} with {context.staged_root / 'build'}")
-shutil.rmtree(context.project_root / "build")
+
+build_folder = (context.project_root / "build")
+if build_folder.exists():
+    shutil.rmtree(build_folder)
+
 context.unstage()
 ```
 
