@@ -7,7 +7,4 @@ TODO: Explain this
 #!/usr/bin/env python
 
 </4_LLM_Revisions/README.md#send prompt>
-
-print(messages)
-print(response)
 ```

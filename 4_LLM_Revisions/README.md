@@ -16,16 +16,9 @@ import openai
 
 openai.api_key = os.environ['TOME_OPENAI_API_KEY']
 
-<Preamble.md#system>
+<Preamble.md#preamble>
 <Revision.md#prompt>
+<Functions.md#functions>
 
-messages = [
-    {"role": "system", "content": system},
-    {"role": "user", "content": prompt},
-]
-
-response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=messages
-)
+<Conversation.md#conversation>
 ```

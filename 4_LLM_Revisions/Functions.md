@@ -9,11 +9,12 @@ The return values of these functions will be a dictionariy describing what needs
 { "stop": True }
 ```
 
-The functions themselves will need to be collected in a variable, so the information can be passed easily to ChatGPT.
+The functions footprint will need to be collected in a variable, so the information can be passed easily to ChatGPT. The functions themselves will also need to be tracked, so the response can be directed to the correct place.
 
 `{#functions}: m`
 ```python
-functions = []
+function_footprints = []
+functions = {}
 ```
 
 ## Help
@@ -22,15 +23,15 @@ As a backstop to all of the other functions, a help function is provided that wi
 
 `{#functions}: m`
 ```python
-functions.append({
+function_footprints.append({
     "name": "help",
-    "description": "Describe information you are unable to obtain from one of the other functions",
+    "description": "Request additional information about parts of the project, only use this if you have exhausted other functions",
     "parameters": {
         "type": "object",
         "properties": {
             "description": {
                 "type": "string",
-                "description": "an explanation of the information that is needed and why it is not covered by one of the other functions",
+                "description": "A detailed explanation of additional information about the project you need and why it is not covered by one of the other functions",
             },
         },
     },
@@ -41,8 +42,9 @@ Since the conversation is already being printed, it doesn't have to do anything 
 
 `{#functions}: m`
 ```python
-def help(description):
+def help(parameters):
     return <#end the conversation>
+functions["help"] = help
 ```
 
 ## File Tree
@@ -51,7 +53,7 @@ A basic piece of information it will need in order to request information about 
 
 `{#functions}: m`
 ```python
-functions.append({
+function_footprints.append({
     "name": "file_tree",
     "description": "Returns a description of the file tree for the project",
     "parameters": { "type": "object", "properties": {} },
@@ -68,6 +70,7 @@ def file_tree():
         "stop": False,
         "response": "\n".join([str(p) for p in context.project_root.glob("**/*.md")]),
     }
+functions["file_tree"] = file_tree
 ```
 
 ## Patch
@@ -76,7 +79,7 @@ Once ChatGPT is prepared to suggest a revision, it should be done in a form appr
 
 `{#functions}: m`
 ```python
-functions.append({
+function_footprints.append({
     "name": "patch",
     "description": "Make a revision to the codebase by describing a diff file that should be applied to the codebase using the `patch` command",
     "parameters": {
@@ -95,6 +98,8 @@ Eventually this patch will be applied to the codebase at this point, but for now
 
 `{#functions}: m`
 ```python
-def patch(diff):
+def patch(parameters):
+    # diff = parameters["diff"]
     return <#end the conversation>
+functions["patch"] = patch
 ```
