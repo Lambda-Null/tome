@@ -26,11 +26,11 @@ Here's a collection of various ideas to explore for this project:
 * Tab completion on commands
 * Macros in macro names
 * Builtin macros for things related to Tome one may want to reference in their project
-* Command to ask ChatGPT to write a section
 * Report line numbers for failure
 * Wildcard filename, both `*` and `**`
 * Stage /.tome/commands directory
 * Define macros in tables easily
+* A way to express that the `build` command needs to be run before another command
 
 ## Discussing These Ideas
 
@@ -51,3 +51,7 @@ lackita: Like how meta this first discussion is? I thought it would be a good wa
 Right now the program is assembled by the user, including going through the bootstrap process. On top of that, it's only really possible to run it on Unix based systems right now. This will severely limit adoption, and should be one of the first problems that's solved.
 
 lackita: My initial thought is a tool like [PyInstaller](https://pyinstaller.org/en/stable/) could be used, but I'm not too familiar with that tool.
+
+## Command to ask ChatGPT to write a section
+
+lackita: I spent a little bit of time working on this, but had trouble getting a useful suggestion. I pushed up the changes as an experimental branch [here](https://github.com/Lambda-Null/tome/tree/llm-suggestions).
