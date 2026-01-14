@@ -65,7 +65,7 @@ The individual commands are independent scripts which can be run. To communicate
 import os
 import sys
 import pathlib
-executable = pathlib.Path(sys.argv[0])
+executable = pathlib.Path(sys.argv[0]).resolve()
 if "PYTHONPATH" in os.environ:
     os.environ["PYTHONPATH"] += ":"
 else:
