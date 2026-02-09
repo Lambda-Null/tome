@@ -31,10 +31,12 @@ Since project specific commands can also be defined, those should be listed here
 
 `{#/build/bin/commands/help}: f+x`
 ```python
-</3_Project_Structure/1_Context.md#Establish project context>
-commands = context.project_root / ".tome" / "commands"
-if commands.is_dir():
-    <#Print project specific help>
+</3_Project_Structure/Building_Tome_Context.md#Within project context>
+    import pathlib
+    commands = context.absolute_path(pathlib.Path(".tome") / "commands")
+
+    if commands.is_dir():
+        <#Print project specific help>
 ```
 
 The issue with using `pathlib` is it's difficult to tell if the directory is empty from the API. So the prefix message will instead be on the first iteration through the loop.
@@ -51,7 +53,14 @@ for command in commands.iterdir():
 
 ## The Executable
 
-Right now, this executable will only work in Unix environments, and specifically has only been tested on Ubuntu 23.04. The easiest way of using it currently is to add `/path/to/this/project/build/bin` to your `PATH`.
+Right now, this executable has only been tested in Unix environments, specifically Ubuntu 23.04 and higher. It's built with [PyInstaller](https://pyinstaller.org/en/stable/), which allows portability, but not across operating systems.
+
+`{#/.tome/requirements.txt}: f`
+```
+pyinstaller==6.10.0
+```
+
+The easiest way of using it currently is to add `/path/to/this/project/build/bin` to your `PATH`.
 
 `{#/build/bin/tome}: f+x`
 ```python
@@ -76,9 +85,19 @@ sys.path.append(str(executable.parent.parent))
 
 ## Prebuilt Commands
 
-The files in `/build/bin/commands/` are scripts which share the command name provided. If a command isn't found there, commands defined for the particular project will be executed.
+Within all commands, knowing the project root is extremely helpful in operating on various generated files, so the environment variable `PROJECT_ROOT` is provided.
 
 `{#/build/bin/tome}: f+x`
+```python
+</3_Project_Structure/Building_Tome_Context.md#Within project context>
+    if context:
+        os.environ["PROJECT_ROOT"] = str(context.absolute_path("/"))
+    <#Context aware logic>
+```
+
+The files in `/build/bin/commands/` are scripts which share the command name provided. If a command isn't found there, commands defined for the particular project will be executed.
+
+`{#Context aware logic}: m`
 ```python
 command = sys.argv[1]
 command_path = executable.parent / "commands" / command
@@ -88,21 +107,19 @@ if not command_path.exists():
 
 ## Project Commands {#project-commands}
 
-The motivation for using scripts instead of libraries is to allow commands to be implemented in any language. Tome itself will define all of these in Python, but any scripts in `/.tome/commands/` of the project will be invoked if a core command doesn't exist. Within these commands, knowing the project root is extremely helpful in operating on various generated files, so providing the environment variable `PROJECT_ROOT`.
+The motivation for using scripts instead of libraries is to allow commands to be implemented in any language. Tome itself will define all of these in Python, but any scripts in `/.tome/commands/` of the project will be invoked if a core command doesn't exist.
 
 `{#Locate script within project context}: s`
 ```python
-</3_Project_Structure/1_Context.md#Establish project context>
 if context:
-    command_path = context.project_root / ".tome" / "commands" / command
-    os.environ["PROJECT_ROOT"] = str(context.project_root)
+    command_path = context.absolute_path(pathlib.Path(".tome") / "commands" / command)
 ```
 
 ## Missing Commands
 
 If the command isn't defined anywhere, the help command is used.
 
-`{#/build/bin/tome}: f+x`
+`{#Context aware logic}: m`
 ```python
 if not command_path.exists():
     command = "help"
@@ -113,7 +130,7 @@ if not command_path.exists():
 
 Since there's nothing left to do except execute the command, the `exec*` class of functions can be used. This is most likely a micro-optimization, but it makes the process of conveying the exit code to the caller easier.
 
-`{#/build/bin/tome}: f+x`
+`{#Context aware logic}: m`
 ```python
 os.execvp(command_path, [command_path] + sys.argv[2:])
 ```

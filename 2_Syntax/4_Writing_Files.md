@@ -23,8 +23,10 @@ Because of the possibility of macros in other files, all must have their macros 
 `{#Parser functions}: m`
 ```python
 def catalog_all_files(self):
-    for project_path, full_path in self.context.files.items():
-        self.context.associate_macro(project_path, self.catalog_macros(full_path))
+    macros = {}
+    for project_path, full_path in self.context:
+        macros[project_path] = self.catalog_macros(full_path)
+    return macros
 ```
 
 Each files outputs need to be accumulated separately and collated for the [build command](/1_CLI/2_Build.md).
@@ -32,13 +34,46 @@ Each files outputs need to be accumulated separately and collated for the [build
 `{#Parser functions}: m`
 ```python
 def output_files(self):
-    self.catalog_all_files()
+    self.macros = macros = self.catalog_all_files()
 
     files = []
-    for project_path, system_path in self.context.files.items():
+    for project_path, system_path in self.context:
         <#Accumulate outputs for file>
 
+    <#Process output files>
+
     return files
+```
+
+Multiple files can reference the same output file, so those need to be combined to avoid overwriting later in the process.
+
+`{#/test/test_writing_files.py}: f`
+```
+from parser import Parser
+from context.file import FileContext
+from unittest import TestCase
+from pathlib import Path
+import os
+
+class WritingFilesTest(TestCase):
+    def test_output_files_are_not_duplicated(self):
+        c = FileContext(Path(os.environ["PROJECT_ROOT"]))
+        p = Parser(c)
+        self.assertEqual(
+            1,
+            len([file for file in p.output_files() if file.path == c.absolute_path("/.tome/requirements.txt")]),
+        )
+```
+
+`{#Process output files}: m`
+```
+file_hash = {}
+for file in files:
+    if file.path in file_hash:
+        file_hash[file.path].contents += file.contents
+    else:
+        file_hash[file.path] = file
+files = file_hash.values()
 ```
 
 Files can have multiple output files, which each need to be expanded separately. There are a few considerations to keep in mind when identifying the path of the new file:
@@ -48,10 +83,10 @@ Files can have multiple output files, which each need to be expanded separately.
 
 `{#Accumulate outputs for file}: s`
 ```python
-for output_file in self.context.macros[project_path].files():
+for output_file in macros[project_path].files():
     path = output_file.name
     if path[0] == "/":
-        path = self.context.absolute_path(self.context.resolve_relative_path(Path(project_path), path))
+        path = self.context.absolute_path(self.context.relative_path(Path(project_path), path))
     else:
         path = system_path.parent / path
     files.append(OutputFile(

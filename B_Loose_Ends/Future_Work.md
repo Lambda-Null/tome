@@ -31,6 +31,7 @@ Here's a collection of various ideas to explore for this project:
 * Stage /.tome/commands directory
 * Define macros in tables easily
 * A way to express that the `build` command needs to be run before another command
+* Ignore hidden files
 
 ## Discussing These Ideas
 

@@ -44,7 +44,7 @@ def detect_macro(self, line, file):
             "start": result.start(),
             "end": result.end(),
             "identifier": result.group(1),
-            "path": result.group(2) and self.context.resolve_relative_path(Path(file), result.group(2)),
+            "path": result.group(2) and self.context.relative_path(Path(file), result.group(2)),
             "name": result.group(3),
         }
 ```
@@ -81,7 +81,7 @@ from pathlib import Path
 `{#Expand macro for a line}: m`
 ```python
 macro_file = location["path"] or file
-macros = self.context.macros[str(self.context.resolve_relative_path(Path(file), macro_file))]
+macros = self.macros[str(self.context.relative_path(Path(file), macro_file))]
 macro = macros.request(location["name"])
 ```
 

@@ -18,10 +18,10 @@ Any meta information needed to operate is stored in a directory at the project r
 
 `{#Create files and directories}: m`
 ```python
-</3_Project_Structure/1_Context.md#Import>
+</3_Project_Structure/Building_Tome_Context.md#Import>
 context = Context(Path.cwd())
 print("Creating .tome")
-dot_tome = context.project_root / ".tome"
+dot_tome = context.absolute_path(".tome")
 dot_tome.mkdir(exist_ok = True)
 ```
 
@@ -36,11 +36,11 @@ Git doesn't track folders with no files, but Tome relies on the presence of the 
 (dot_tome / ".gitkeep").write_text("")
 ```
 
-By convention, the `build` directory is where all generated files go. Typically those files aren't checked in, so ignoring those.
+By convention, the `build` and `test` directories are where all generated files go. Typically those files aren't checked in, so ignoring those.
 
 
 `{#Create files and directories}: m`
 ```python
 print("Creating .gitignore")
-(context.project_root / ".gitignore").write_text("build")
+(context.absolute_path(".gitignore")).write_text("build\ntest")
 ```

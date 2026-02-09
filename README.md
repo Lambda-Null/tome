@@ -7,6 +7,7 @@ Tome is a literate programming tool aimed at working effectively in large scale 
 * [Chapter 1 - CLI](/1_CLI/README.md)
 * [Chapter 2 - Syntax](/2_Syntax/README.md)
 * [Chapter 3 - Project Structure](/3_Project_Structure/README.md)
+* [Chapter 4 - Testing](/4_Testing/README.md)
 * [Appendix A - Bootstrapping Initial Version](A_Bootstrapping_Initial_Version/README.md)
 * [Appendix B - Loose Ends](/B_Loose_Ends/README.md)
 

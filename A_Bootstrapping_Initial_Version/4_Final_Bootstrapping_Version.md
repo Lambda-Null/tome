@@ -4,7 +4,7 @@ With the base syntax implemented and the ability to reference external files, it
 
 ## Project Relative Paths
 
-The main feature still lacking is a notion of project relative paths. This is a simplified version of the logic defined in [the section on the project context](/3_Project_Structure/1_Context.md).
+The main feature still lacking is a notion of project relative paths. This is a simplified version of the logic defined in [the section on the project context](/3_Project_Structure/File_Context.md).
 
 `{#Project context}: s`
 ```python
@@ -24,7 +24,7 @@ class Context():
             self.add_file(file)
 
     def add_file(self, file):
-        self.files[<../3_Project_Structure/1_Context.md#Convert system path to project path>] = file.absolute()
+        self.files[<../3_Project_Structure/File_Context.md#Convert system path to project path>] = file.absolute()
 
     def absolute_path(self, project_path):
         return self.project_root / re.sub(r"^/", "", project_path)

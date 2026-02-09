@@ -2,7 +2,7 @@
 
 For those unfamiliar, a [macro](https://en.wikipedia.org/wiki/Macro_(computer_science)) is an abbreviated description of a larger block of text. They aren't as common in newer programming languages, but the name has a long history in Literate Programming and is relevant to how Tome operates.
 
-[Section 1](1_Code_Blocks.md) covered how code blocks are detected and associated with a name. This section deals with how they're cataloged. Expansion of those macros, including how macros in other files are pulled in, is covvered in [section 3](3_Expanding_Macros.md).
+[Section 1](1_Code_Blocks.md) covered how code blocks are detected and associated with a name. This section deals with how they're cataloged. Expansion of those macros, including how macros in other files are pulled in, is covered in [section 3](3_Expanding_Macros.md).
 
 ## Links as Macros
 
@@ -121,7 +121,7 @@ def files(self):
 
 ## Accumulating Macros
 
-At this point, all of the pieces are necessary to pull macros in a file out and store them. This incorporates several functions defined in the preceding sections.
+At this point, we have all of the pieces necessary to pull macros in a file out and store them. This incorporates several functions defined in the preceding sections.
 
 `{#Parser functions}: m`
 ```python
