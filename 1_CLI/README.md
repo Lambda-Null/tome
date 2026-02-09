@@ -87,6 +87,8 @@ sys.path.append(str(executable.parent.parent))
 
 Within all commands, knowing the project root is extremely helpful in operating on various generated files, so the environment variable `PROJECT_ROOT` is provided.
 
+The `init` and `help` commands are bootstrap operations that must work before a `.tome` directory exists, so they are resolved without project context.
+
 `{#/build/bin/tome}: f+x`
 ```python
 command = sys.argv[1] if len(sys.argv) > 1 else "help"
@@ -97,7 +99,14 @@ if command not in {"init", "help"}:
         <#Context aware logic>
 ```
 
-The `init` and `help` commands are resolved without using project context and only check the core command scripts.
+`{#/build/bin/tome}: f+x`
+```python
+command_path = executable.parent / "commands" / command
+if not command_path.exists():
+    command = "help"
+    command_path = executable.parent / "commands" / command
+os.execvp(command_path, [command_path] + sys.argv[2:])
+```
 
 The files in `/build/bin/commands/` are scripts which share the command name provided. If a command isn't found there, commands defined for the particular project will be executed.
 
