@@ -89,17 +89,20 @@ Within all commands, knowing the project root is extremely helpful in operating 
 
 `{#/build/bin/tome}: f+x`
 ```python
-</3_Project_Structure/Building_Tome_Context.md#Within project context>
-    if context:
+command = sys.argv[1] if len(sys.argv) > 1 else "help"
+context = None
+if command not in {"init", "help"}:
+    </3_Project_Structure/Building_Tome_Context.md#Within project context>
         os.environ["PROJECT_ROOT"] = str(context.absolute_path("/"))
-    <#Context aware logic>
+        <#Context aware logic>
 ```
+
+The `init` and `help` commands are resolved without using project context and only check the core command scripts.
 
 The files in `/build/bin/commands/` are scripts which share the command name provided. If a command isn't found there, commands defined for the particular project will be executed.
 
 `{#Context aware logic}: m`
 ```python
-command = sys.argv[1]
 command_path = executable.parent / "commands" / command
 if not command_path.exists():
     <#Locate script within project context>

@@ -18,8 +18,8 @@ Any meta information needed to operate is stored in a directory at the project r
 
 `{#Create files and directories}: m`
 ```python
-</3_Project_Structure/Building_Tome_Context.md#Import>
-context = Context(Path.cwd())
+from context.file import FileContext
+context = FileContext(Path.cwd())
 print("Creating .tome")
 dot_tome = context.absolute_path(".tome")
 dot_tome.mkdir(exist_ok = True)
